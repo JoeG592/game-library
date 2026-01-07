@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Library - SharePoint</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0078d4;
+            --primary-dark: #004578;
+            --primary-light: #106ebe;
+            --surface: #ffffff;
+            --background: #f5f5f5;
+            --border: #e1e1e1;
+            --text: #242424;
+            --text-secondary: #666666;
+            --success: #107c10;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary-dark);
+            color: white;
+            padding: 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .waffle {
+            width: 24px;
+            height: 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 7px);
+            gap: 1px;
+        }
+
+        .waffle span {
+            background: white;
+            border-radius: 1px;
+        }
+
+        .header-title {
+            margin-left: 32px;
+            font-weight: 400;
+            opacity: 0.95;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-item {
+            padding: 18px 0;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-item:hover {
+            color: var(--text);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 50%, #4a1942 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            height: 400px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-lg);
+            animation: heroFadeIn 0.8s ease-out;
+        }
+
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-background {
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><circle cx="200" cy="200" r="150" fill="rgba(255,107,107,0.2)"/><circle cx="800" cy="150" r="120" fill="rgba(78,205,196,0.2)"/><circle cx="1000" cy="300" r="100" fill="rgba(255,230,109,0.2)"/></svg>') center/cover;
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(-20px) translateY(-10px);
+            }
+        }
+
+        .hero-icon {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-15deg);
+            font-size: 320px;
+            opacity: 0.15;
+            filter: drop-shadow(0 0 60px rgba(255, 100, 100, 0.4));
+            animation: iconPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: translateY(-50%) rotate(-15deg) scale(1);
+                opacity: 0.15;
+            }
+            50% {
+                transform: translateY(-50%) rotate(-15deg) scale(1.05);
+                opacity: 0.2;
+            }
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 48px;
+            color: white;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0, 120, 212, 0.9);
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: badgePulse 2s ease-in-out infinite;
+            width: fit-content;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 120, 212, 0.7);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 0 10px rgba(0, 120, 212, 0);
+            }
+        }
+
+        .hero-title {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 12px rgba(0,0,0,0.6);
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            margin-bottom: 24px;
+            opacity: 0.95;
+            font-style: italic;
+            text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .hero-btn {
+            padding: 14px 32px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .hero-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .hero-btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .hero-btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: var(--surface);
+            padding: 20px 24px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            box-shadow: var(--shadow);
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--background);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+
+        .search {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 10px 16px 10px 44px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+
+        .search::before {
+            content: '🔍';
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        /* Games Grid */
+        .games {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            animation: cardFadeIn 0.6s ease-out backwards;
+        }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-card:nth-child(1) { animation-delay: 0.1s; }
+        .game-card:nth-child(2) { animation-delay: 0.15s; }
+        .game-card:nth-child(3) { animation-delay: 0.2s; }
+        .game-card:nth-child(4) { animation-delay: 0.25s; }
+        .game-card:nth-child(5) { animation-delay: 0.3s; }
+        .game-card:nth-child(6) { animation-delay: 0.35s; }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .game-thumbnail {
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary), #5c2d91);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-thumbnail::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.05) 10px,
+                rgba(255,255,255,0.05) 20px
+            );
+        }
+
+        .game-body {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .game-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .game-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .game-progress {
+            margin-top: 16px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--background);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.6s ease;
+            border-radius: 4px;
+        }
+
+        .game-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .game-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .game-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: modalFadeIn 0.3s ease-out;
+            padding: 20px;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideUp 0.3s ease-out;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+
+        .checkbox-group {
+            background: var(--background);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checkbox-group:hover {
+            background: #e8e8e8;
+            border-color: var(--primary);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 2px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .checkbox-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .checkbox-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--background);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 120, 212, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .uploaded-file {
+            background: var(--background);
+            padding: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .uploaded-file-icon {
+            font-size: 32px;
+        }
+
+        .uploaded-file-info {
+            flex: 1;
+        }
+
+        .uploaded-file-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .uploaded-file-size {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            padding: 20px 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+        }
+
+        .tracker-modal .modal-content {
+            max-width: 1200px;
+        }
+
+        .tracker-frame {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-brand">
+            <div class="waffle">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+            </div>
+            SharePoint
+        </div>
+        <div class="header-title">Game Library</div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active">Home</div>
+        <div class="nav-item">Documents</div>
+        <div class="nav-item">Game Trackers</div>
+        <div class="nav-item">Reports</div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">My Game Collection</h1>
+            <p class="page-subtitle">Track your gaming progress and manage your HTML game trackers</p>
+        </div>
+
+        <div class="hero">
+            <div class="hero-background"></div>
+            <div class="hero-icon" id="heroIcon">⚔️</div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">🎮 Currently Playing</div>
+                <h2 class="hero-title" id="heroTitle">Final Fantasy XVI</h2>
+                <p class="hero-subtitle" id="heroSubtitle">The legacy of the Crystals has shaped our history for long enough.</p>
+                <div class="hero-meta">
+                    <span class="hero-meta-item">⏱️ <span id="heroHours">32</span> hours played</span>
+                    <span class="hero-meta-item">📊 <span id="heroProgress">47</span>% complete</span>
+                    <span class="hero-meta-item">🏆 <span id="heroAchievements">23/87</span> achievements</span>
+                </div>
+                <div class="hero-actions">
+                    <button class="hero-btn hero-btn-primary" onclick="openTracker('ffxvi')">Open Tracker</button>
+                    <button class="hero-btn" onclick="updateProgress()">Update Progress</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalGames">6</div>
+                <div class="stat-label">Total Games</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedGames">2</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="inProgress">4</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalHours">247</div>
+                <div class="stat-label">Total Hours</div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="openUploadModal()">📤 Upload New Tracker</button>
+            <button class="btn">📊 View Reports</button>
+            <button class="btn">⚙️ Settings</button>
+            <div style="flex: 1"></div>
+            <div class="search">
+                <input type="text" placeholder="Search games..." onkeyup="searchGames(this.value)">
+            </div>
+        </div>
+
+        <div class="games" id="gamesGrid">
+            <div class="game-card" data-game="The Legend of Zelda">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #107c10, #0b5e0b);">
+                    🗡️
+                </div>
+                <div class="game-body">
+                    <div class="game-title">The Legend of Zelda: TOTK</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Jan 2025</div>
+                        <div class="game-meta-item">⏱️ 45h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('zelda')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('zelda')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" data-game="Elden Ring">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #d4af37, #aa8c2d);">
+                    ⚔️
+                </div>
+                <div class="game-body">
+                    <div class="game-title">Elden Ring</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Dec 2024</div>
+                        <div class="game-meta-item">⏱️ 82h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('elden')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('elden')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" data-game="Baldurs Gate 3">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #8b4513, #654321);">
+                    🐉
+                </div>
+                <div class="game-body">
+                    <div class="game-title">Baldur's Gate 3</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Nov 2024</div>
+                        <div class="game-meta-item">⏱️ 67h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>42%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 42%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('bg3')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('bg3')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" data-game="Cyberpunk 2077">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #fcee21, #ff003c);">
+                    🤖
+                </div>
+                <div class="game-body">
+                    <div class="game-title">Cyberpunk 2077</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Oct 2024</div>
+                        <div class="game-meta-item">⏱️ 28h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>18%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 18%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('cyberpunk')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('cyberpunk')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" data-game="Red Dead Redemption 2">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #c41e3a, #8b0000);">
+                    🤠
+                </div>
+                <div class="game-body">
+                    <div class="game-title">Red Dead Redemption 2</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Sep 2024</div>
+                        <div class="game-meta-item">⏱️ 15h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>100%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('rdr2')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('rdr2')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" data-game="Starfield">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #1a1a2e, #0f3460);">
+                    🚀
+                </div>
+                <div class="game-body">
+                    <div class="game-title">Starfield</div>
+                    <div class="game-meta">
+                        <div class="game-meta-item">📅 Aug 2024</div>
+                        <div class="game-meta-item">⏱️ 10h</div>
+                    </div>
+                    <div class="game-progress">
+                        <div class="progress-label">
+                            <span>Progress</span>
+                            <span>8%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 8%;"></div>
+                        </div>
+                    </div>
+                    <div class="game-actions">
+                        <button class="game-btn" onclick="openTracker('starfield')">Open Tracker</button>
+                        <button class="game-btn" onclick="editGame('starfield')">Edit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Upload New Game Tracker</div>
+                <button class="modal-close" onclick="closeUploadModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label class="form-label">Game Name</label>
+                        <input type="text" class="form-input" placeholder="Enter game name" id="gameName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-input" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Game Icon (Emoji)</label>
+                        <input type="text" class="form-input" placeholder="🎮" id="gameIcon" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Game Quote (Optional)</label>
+                        <input type="text" class="form-input" placeholder="Enter a memorable quote from the game" id="gameQuote">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox-group" onclick="document.getElementById('currentlyPlaying').click()">
+                            <input type="checkbox" id="currentlyPlaying" class="checkbox" onclick="event.stopPropagation()">
+                            <label class="checkbox-label" for="currentlyPlaying">
+                                <span class="checkbox-text">🎮 Set as currently playing game</span>
+                                <span class="checkbox-hint">This will display the game in the hero banner at the top of your collection</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">HTML Tracker File</label>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Click to browse or drag and drop</div>
+                            <div class="upload-hint">Supports: HTML files only</div>
+                        </div>
+                        <input type="file" class="file-input" id="fileInput" accept=".html">
+                        <div id="uploadedFile"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeUploadModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="uploadTracker()">Upload Tracker</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal tracker-modal" id="trackerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="trackerTitle">Game Tracker</div>
+                <button class="modal-close" onclick="closeTrackerModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe class="tracker-frame" id="trackerFrame"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        document.getElementById('startDate').valueAsDate = new Date();
+
+        // Upload area handlers
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            });
+        });
+
+        uploadArea.addEventListener('drop', handleDrop);
+
+        function handleDrop(e) {
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            handleFileSelect({ target: { files: files } });
+        }
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileSize = (file.size / 1024).toFixed(2);
+                document.getElementById('uploadedFile').innerHTML = `
+                    <div class="uploaded-file">
+                        <div class="uploaded-file-icon">📄</div>
+                        <div class="uploaded-file-info">
+                            <div class="uploaded-file-name">${file.name}</div>
+                            <div class="uploaded-file-size">${fileSize} KB</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Modal functions
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            document.getElementById('uploadForm').reset();
+            document.getElementById('uploadedFile').innerHTML = '';
+        }
+
+        function openTrackerModal() {
+            document.getElementById('trackerModal').classList.add('active');
+        }
+
+        function closeTrackerModal() {
+            document.getElementById('trackerModal').classList.remove('active');
+        }
+
+        // Upload tracker
+        function uploadTracker() {
+            const gameName = document.getElementById('gameName').value;
+            const startDate = document.getElementById('startDate').value;
+            const gameIcon = document.getElementById('gameIcon').value || '🎮';
+            const gameQuote = document.getElementById('gameQuote').value || 'An epic gaming adventure awaits.';
+            const isCurrentlyPlaying = document.getElementById('currentlyPlaying').checked;
+            const file = fileInput.files[0];
+
+            if (!gameName || !startDate || !file) {
+                alert('Please fill in all required fields and select an HTML file.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const gameId = gameName.toLowerCase().replace(/\s+/g, '-');
+
+                // Store tracker
+                localStorage.setItem(`tracker_${gameId}`, content);
+
+                // Store metadata
+                const gameData = {
+                    name: gameName,
+                    startDate: startDate,
+                    icon: gameIcon,
+                    quote: gameQuote,
+                    isCurrentlyPlaying: isCurrentlyPlaying,
+                    hours: 0,
+                    progress: 0,
+                    achievements: '0/0'
+                };
+                localStorage.setItem(`game_${gameId}`, JSON.stringify(gameData));
+
+                // Update hero if currently playing
+                if (isCurrentlyPlaying) {
+                    // Remove currently playing from other games
+                    Object.keys(localStorage).filter(k => k.startsWith('game_')).forEach(key => {
+                        if (key !== `game_${gameId}`) {
+                            const data = JSON.parse(localStorage.getItem(key));
+                            data.isCurrentlyPlaying = false;
+                            localStorage.setItem(key, JSON.stringify(data));
+                        }
+                    });
+                    
+                    updateHero(gameName, gameIcon, gameQuote, gameId, 0, 0, '0/0');
+                }
+
+                // Add card
+                addGameCard(gameName, startDate, gameIcon, gameId);
+
+                closeUploadModal();
+                alert('Tracker uploaded successfully!');
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Update hero banner
+        function updateHero(name, icon, quote, id, hours, progress, achievements) {
+            document.getElementById('heroTitle').textContent = name;
+            document.getElementById('heroSubtitle').textContent = quote;
+            document.getElementById('heroIcon').textContent = icon;
+            document.getElementById('heroHours').textContent = hours;
+            document.getElementById('heroProgress').textContent = progress;
+            document.getElementById('heroAchievements').textContent = achievements;
+            
+            const openBtn = document.querySelector('.hero-btn-primary');
+            openBtn.setAttribute('onclick', `openTracker('${id}')`);
+
+            // Random gradient
+            const gradients = [
+                'linear-gradient(135deg, #1a1a2e 0%, #2d1b3d 50%, #4a1942 100%)',
+                'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+                'linear-gradient(135deg, #141e30 0%, #243b55 50%, #2c5364 100%)',
+                'linear-gradient(135deg, #000000 0%, #434343 50%, #000000 100%)',
+                'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%)'
+            ];
+            const hero = document.querySelector('.hero');
+            hero.style.background = gradients[Math.floor(Math.random() * gradients.length)];
+        }
+
+        // Add game card
+        function addGameCard(name, date, icon, id) {
+            const colors = [
+                'linear-gradient(135deg, #667eea, #764ba2)',
+                'linear-gradient(135deg, #f093fb, #f5576c)',
+                'linear-gradient(135deg, #4facfe, #00f2fe)',
+                'linear-gradient(135deg, #43e97b, #38f9d7)',
+                'linear-gradient(135deg, #fa709a, #fee140)'
+            ];
+
+            const card = `
+                <div class="game-card" data-game="${name}">
+                    <div class="game-thumbnail" style="background: ${colors[Math.floor(Math.random() * colors.length)]};">
+                        ${icon}
+                    </div>
+                    <div class="game-body">
+                        <div class="game-title">${name}</div>
+                        <div class="game-meta">
+                            <div class="game-meta-item">📅 ${date}</div>
+                            <div class="game-meta-item">⏱️ 0h</div>
+                        </div>
+                        <div class="game-progress">
+                            <div class="progress-label">
+                                <span>Progress</span>
+                                <span>0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="game-actions">
+                            <button class="game-btn" onclick="openTracker('${id}')">Open Tracker</button>
+                            <button class="game-btn" onclick="editGame('${id}')">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('gamesGrid').insertAdjacentHTML('beforeend', card);
+            updateStats();
+        }
+
+        // Open tracker
+        function openTracker(gameId) {
+            const content = localStorage.getItem(`tracker_${gameId}`);
+            
+            document.getElementById('trackerTitle').textContent = `Tracker: ${gameId}`;
+            openTrackerModal();
+            
+            const iframe = document.getElementById('trackerFrame');
+            
+            if (content) {
+                iframe.srcdoc = content;
+            } else {
+                iframe.srcdoc = `
+                    <html>
+                    <head>
+                        <style>
+                            body {
+                                font-family: system-ui, sans-serif;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                height: 100vh;
+                                margin: 0;
+                                background: linear-gradient(135deg, #667eea, #764ba2);
+                                color: white;
+                                text-align: center;
+                            }
+                            .message {
+                                padding: 48px;
+                                background: rgba(255, 255, 255, 0.15);
+                                border-radius: 16px;
+                                backdrop-filter: blur(20px);
+                            }
+                            h1 { margin: 0 0 16px 0; font-size: 32px; }
+                            p { margin: 0; opacity: 0.95; font-size: 16px; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="message">
+                            <h1>🎮 Game Tracker</h1>
+                            <p>Your HTML tracker would load here.</p>
+                            <p style="margin-top: 12px;">Upload a tracker to see it in action!</p>
+                        </div>
+                    </body>
+                    </html>
+                `;
+            }
+        }
+
+        // Edit game
+        function editGame(gameId) {
+            const gameData = JSON.parse(localStorage.getItem(`game_${gameId}`) || '{}');
+            
+            if (Object.keys(gameData).length === 0) {
+                alert('This is a demo game card. Upload a tracker to enable editing.');
+                return;
+            }
+            
+            const makeActive = confirm(`Set "${gameData.name}" as your currently playing game?`);
+            
+            if (makeActive) {
+                Object.keys(localStorage).filter(k => k.startsWith('game_')).forEach(key => {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    data.isCurrentlyPlaying = (key === `game_${gameId}`);
+                    localStorage.setItem(key, JSON.stringify(data));
+                });
+                
+                updateHero(
+                    gameData.name,
+                    gameData.icon,
+                    gameData.quote,
+                    gameId,
+                    gameData.hours,
+                    gameData.progress,
+                    gameData.achievements
+                );
+                
+                alert(`"${gameData.name}" is now your currently playing game!`);
+            }
+        }
+
+        // Search games
+        function searchGames(query) {
+            const cards = document.querySelectorAll('.game-card');
+            const term = query.toLowerCase();
+            
+            cards.forEach(card => {
+                const name = card.getAttribute('data-game').toLowerCase();
+                card.style.display = name.includes(term) ? 'block' : 'none';
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            const cards = document.querySelectorAll('.game-card');
+            document.getElementById('totalGames').textContent = cards.length;
+        }
+
+        // Update progress
+        function updateProgress() {
+            alert('Progress update functionality would allow you to modify completion percentage, hours played, and achievements.');
+        }
+    </script>
+</body>
+</html>
