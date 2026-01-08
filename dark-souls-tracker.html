@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Souls Remastered - Walkthrough Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1410;
+            --bg-card-hover: #231c16;
+            --border-color: #3d2e1f;
+            --text-primary: #e8dcc8;
+            --text-secondary: #9d8a6f;
+            --accent-gold: #d4af37;
+            --accent-bronze: #cd7f32;
+            --accent-red: #8b0000;
+            --completed-bg: rgba(46, 125, 50, 0.15);
+            --completed-border: #2e7d32;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.95)), 
+                        url('https://images.unsplash.com/photo-1551415923-a2297c7fda79?q=80&w=2000') center/cover;
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 3px solid var(--accent-gold);
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 10, 0.4) 100%);
+            pointer-events: none;
+        }
+
+        .game-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 3px 3px 10px rgba(0, 0, 0, 0.9), 
+                         0 0 30px rgba(212, 175, 55, 0.3);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .playlist-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(139, 0, 0, 0.3);
+            border: 2px solid var(--accent-red);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .playlist-link:hover {
+            background: rgba(139, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        .stat-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        /* Controls Section */
+        .controls-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .playthrough-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .playthrough-selector label {
+            font-family: 'Cinzel', serif;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.9rem;
+        }
+
+        select {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-family: 'Crimson Text', serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--accent-gold);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            border-color: var(--accent-gold);
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+        }
+
+        button.danger {
+            border-color: var(--accent-red);
+        }
+
+        button.danger:hover {
+            background: rgba(139, 0, 0, 0.2);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            font-family: 'Cinzel', serif;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 1rem;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-gold);
+            border-bottom-color: var(--accent-red);
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Video Cards */
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .video-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-card:hover {
+            border-color: var(--accent-gold);
+            background: var(--bg-card-hover);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .video-card.completed {
+            background: var(--completed-bg);
+            border-color: var(--completed-border);
+        }
+
+        .video-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--accent-gold);
+        }
+
+        .video-info {
+            flex: 1;
+        }
+
+        .video-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .video-duration {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .part-badge {
+            background: rgba(212, 175, 55, 0.15);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .timestamp-section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .timestamp-label {
+            font-family: 'Cinzel', serif;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .timestamp-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            font-family: 'Crimson Text', serif;
+            font-size: 0.95rem;
+            width: 120px;
+        }
+
+        .timestamp-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        /* Achievements Section */
+        .achievements-container {
+            display: none;
+        }
+
+        .achievements-container.active {
+            display: block;
+        }
+
+        .achievement-category {
+            margin-bottom: 2.5rem;
+        }
+
+        .category-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+        }
+
+        .achievement-card.completed {
+            background: var(--completed-bg);
+            border-color: var(--completed-border);
+        }
+
+        .achievement-checkbox {
+            display: flex;
+            align-items: flex-start;
+            padding-top: 0.25rem;
+        }
+
+        .achievement-details {
+            flex: 1;
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .trophy-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .trophy-badge.platinum {
+            background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+            color: #1a1410;
+        }
+
+        .trophy-badge.gold {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: #1a1410;
+        }
+
+        .trophy-badge.silver {
+            background: linear-gradient(135deg, #c0c0c0, #d0d0d0);
+            color: #1a1410;
+        }
+
+        .trophy-badge.bronze {
+            background: linear-gradient(135deg, #cd7f32, #e09952);
+            color: #1a1410;
+        }
+
+        .achievement-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .achievement-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .playthrough-selector,
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .video-header {
+                flex-wrap: wrap;
+            }
+
+            .part-badge {
+                width: 100%;
+                text-align: center;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1 class="game-title">DARK SOULS</h1>
+        <p class="game-subtitle">Remastered - Complete Walkthrough Tracker</p>
+        <a href="https://youtube.com/playlist?list=PL7RtZMiaOk8i5W4e8j_Bz6YDdFq3o4aAh" target="_blank" class="playlist-link">
+            <span>▶</span> View Full Playlist by FightinCowboy
+        </a>
+    </div>
+
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Completion</div>
+                <div class="stat-value" id="completionPercent">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Videos Watched</div>
+                <div class="stat-value" id="videosWatched">0/36</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Time Watched</div>
+                <div class="stat-value" id="timeWatched">0:00:00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Time Progress</div>
+                <div class="stat-value" id="timeProgress">0%</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-section">
+            <div class="playthrough-selector">
+                <label for="playthroughSelect">Playthrough:</label>
+                <select id="playthroughSelect">
+                    <option value="first">First Playthrough</option>
+                    <option value="ng1">New Game+ 1</option>
+                    <option value="ng2">New Game+ 2</option>
+                    <option value="ng3">New Game+ 3</option>
+                    <option value="ng4">New Game+ 4</option>
+                    <option value="ng5">New Game+ 5</option>
+                    <option value="ng6">New Game+ 6</option>
+                    <option value="ng7">New Game+ 7</option>
+                    <option value="ng8">New Game+ 8</option>
+                    <option value="ng9">New Game+ 9</option>
+                    <option value="ng10">New Game+ 10</option>
+                </select>
+            </div>
+            <div class="button-group">
+                <button onclick="exportProgress()">Export Progress</button>
+                <button class="danger" onclick="resetCurrentPlaythrough()">Reset Current</button>
+                <button class="danger" onclick="resetAllProgress()">Reset All</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('walkthrough')">Walkthrough</button>
+            <button class="tab" onclick="switchTab('achievements')">Achievements</button>
+        </div>
+
+        <!-- Walkthrough Content -->
+        <div id="walkthrough" class="tab-content active">
+            <h2 class="section-header">FightinCowboy's 100% Walkthrough</h2>
+            <div class="video-list" id="videoList"></div>
+        </div>
+
+        <!-- Achievements Content -->
+        <div id="achievements" class="tab-content">
+            <h2 class="section-header">Achievements & Trophies</h2>
+            <div class="achievements-container active" id="achievementsList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Video data
+        const videos = [
+            { part: 1, title: "Firelink Shrine", duration: "28:24" },
+            { part: 2, title: "Undead Burg", duration: "29:13" },
+            { part: 3, title: "Undead Parish", duration: "30:08" },
+            { part: 4, title: "Priorities", duration: "22:21" },
+            { part: 5, title: "Darkroot Garden", duration: "20:00" },
+            { part: 6, title: "Darkroot Basin", duration: "31:41" },
+            { part: 7, title: "Lower Undead Burg", duration: "23:48" },
+            { part: 8, title: "The Depths", duration: "23:19" },
+            { part: 9, title: "Upper Blighttown", duration: "28:56" },
+            { part: 10, title: "Lower Blighttown", duration: "26:56" },
+            { part: 11, title: "Chaos Witch Quelaag", duration: "24:22" },
+            { part: 12, title: "Sif, the Great Grey Wolf", duration: "27:01" },
+            { part: 13, title: "Sen's Fortress", duration: "31:30" },
+            { part: 14, title: "Iron Golem", duration: "28:55" },
+            { part: 15, title: "Anor Londo", duration: "23:14" },
+            { part: 16, title: "Ornstein and Smough", duration: "31:25" },
+            { part: 17, title: "The Catacombs", duration: "29:59" },
+            { part: 18, title: "Pinwheel & Stray Demon", duration: "25:47" },
+            { part: 19, title: "Painted World of Ariamis", duration: "20:51" },
+            { part: 20, title: "Crossbreed Priscilla", duration: "23:32" },
+            { part: 21, title: "Dark Sun Gwyndolin + Valley of the Drakes", duration: "19:14" },
+            { part: 22, title: "New Londo Ruins + Four Kings", duration: "32:12" },
+            { part: 23, title: "Ceaseless Discharge", duration: "24:25" },
+            { part: 24, title: "Demon Ruins + Firesage Demon", duration: "26:47" },
+            { part: 25, title: "Lost Izalith", duration: "19:39" },
+            { part: 26, title: "Bed of Chaos", duration: "18:07" },
+            { part: 27, title: "Duke's Archives", duration: "25:54" },
+            { part: 28, title: "Crystal Caverns + Seath the Scaleless", duration: "31:13" },
+            { part: 29, title: "The Great Hollow", duration: "24:23" },
+            { part: 30, title: "Ash Lake", duration: "15:21" },
+            { part: 31, title: "Tomb of the Giants + Nito", duration: "31:56" },
+            { part: 32, title: "Royal Wood + Knight Artorias", duration: "26:06" },
+            { part: 33, title: "Oolacile Township", duration: "20:53" },
+            { part: 34, title: "Black Dragon Kalameet", duration: "19:51" },
+            { part: 35, title: "Chasm of the Abyss + Manus", duration: "19:22" },
+            { part: 36, title: "Gwyn, Lord of Cinder", duration: "12:24" }
+        ];
+
+        // Achievements data
+        const achievementsData = {
+            "Story Achievements": [
+                { name: "To Link the Fire", description: "Reach the ending by linking the fire", grade: "gold" },
+                { name: "Dark Lord", description: "Reach the alternate ending", grade: "gold" },
+                { name: "Defeat Gwyn, Lord of Cinder", description: "Defeat the final boss", grade: "silver" }
+            ],
+            "Boss Achievements": [
+                { name: "Iron Golem", description: "Defeat the Iron Golem", grade: "bronze" },
+                { name: "Quelaag's Domain", description: "Defeat Chaos Witch Quelaag", grade: "bronze" },
+                { name: "Sif, the Great Grey Wolf", description: "Defeat Sif", grade: "bronze" },
+                { name: "Ornstein and Smough", description: "Defeat Dragon Slayer Ornstein and Executioner Smough", grade: "silver" },
+                { name: "Gravelord Nito", description: "Defeat Gravelord Nito", grade: "bronze" },
+                { name: "Seath the Scaleless", description: "Defeat Seath the Scaleless", grade: "bronze" },
+                { name: "Four Kings", description: "Defeat the Four Kings", grade: "bronze" },
+                { name: "Bed of Chaos", description: "Defeat the Bed of Chaos", grade: "bronze" },
+                { name: "Knight Artorias", description: "Defeat Knight Artorias (DLC)", grade: "silver" },
+                { name: "Manus, Father of the Abyss", description: "Defeat Manus (DLC)", grade: "silver" },
+                { name: "Black Dragon Kalameet", description: "Defeat Black Dragon Kalameet (DLC)", grade: "silver" }
+            ],
+            "Covenant Achievements": [
+                { name: "Covenant: Way of White", description: "Discover Way of White covenant", grade: "bronze" },
+                { name: "Covenant: Princess's Guard", description: "Discover Princess's Guard covenant", grade: "bronze" },
+                { name: "Covenant: Warrior of Sunlight", description: "Discover Warrior of Sunlight covenant", grade: "bronze" },
+                { name: "Covenant: Darkwraith", description: "Discover Darkwraith covenant", grade: "bronze" },
+                { name: "Covenant: Path of the Dragon", description: "Discover Path of the Dragon covenant", grade: "bronze" },
+                { name: "Covenant: Gravelord Servant", description: "Discover Gravelord Servant covenant", grade: "bronze" },
+                { name: "Covenant: Forest Hunter", description: "Discover Forest Hunter covenant", grade: "bronze" },
+                { name: "Covenant: Darkmoon Blade", description: "Discover Darkmoon Blade covenant", grade: "bronze" },
+                { name: "Covenant: Chaos Servant", description: "Discover Chaos Servant covenant", grade: "bronze" }
+            ],
+            "Weapon & Magic Achievements": [
+                { name: "Knight's Honor", description: "Acquire all rare weapons", grade: "gold" },
+                { name: "Wisdom of a Sage", description: "Acquire all sorceries", grade: "silver" },
+                { name: "Bond of a Pyromancer", description: "Acquire all pyromancies", grade: "silver" },
+                { name: "Prayer of a Maiden", description: "Acquire all miracles", grade: "silver" }
+            ],
+            "Progression Achievements": [
+                { name: "Reach Lordran", description: "Arrive in Lordran", grade: "bronze" },
+                { name: "Ring the Bell (Undead Church)", description: "Ring the Bell of Awakening in Undead Parish", grade: "bronze" },
+                { name: "Ring the Bell (Quelaag's Domain)", description: "Ring the Bell of Awakening in Quelaag's Domain", grade: "bronze" },
+                { name: "Lordvessel", description: "Acquire the Lordvessel", grade: "silver" },
+                { name: "Primordial Serpent", description: "Acquire the Lordvessel and meet Kingseeker Frampt or Darkstalker Kaathe", grade: "bronze" }
+            ],
+            "Exploration Achievements": [
+                { name: "Enkindle", description: "Light a bonfire", grade: "bronze" },
+                { name: "Estus Flask", description: "Acquire Estus Flask", grade: "bronze" },
+                { name: "Defeat the Asylum Demon", description: "Defeat the Asylum Demon in the tutorial area", grade: "bronze" }
+            ],
+            "Ultimate Achievement": [
+                { name: "The Dark Soul", description: "Complete all achievements", grade: "platinum" }
+            ]
+        };
+
+        // Storage keys
+        const STORAGE_KEY = 'darkSoulsProgress';
+        let currentPlaythrough = 'first';
+
+        // Initialize
+        function init() {
+            loadProgress();
+            renderVideos();
+            renderAchievements();
+            updateStats();
+            
+            // Add playthrough selector listener
+            document.getElementById('playthroughSelect').addEventListener('change', (e) => {
+                currentPlaythrough = e.target.value;
+                renderVideos();
+                updateStats();
+            });
+        }
+
+        // Storage functions
+        function getStorageData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : {};
+        }
+
+        function saveStorageData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadProgress() {
+            const data = getStorageData();
+            if (!data[currentPlaythrough]) {
+                data[currentPlaythrough] = {
+                    completed: Array(videos.length).fill(false),
+                    timestamps: Array(videos.length).fill('')
+                };
+                saveStorageData(data);
+            }
+        }
+
+        function getCurrentProgress() {
+            const data = getStorageData();
+            return data[currentPlaythrough] || {
+                completed: Array(videos.length).fill(false),
+                timestamps: Array(videos.length).fill('')
+            };
+        }
+
+        function getAchievementProgress() {
+            const data = getStorageData();
+            return data.achievements || {};
+        }
+
+        function saveAchievementProgress(achievements) {
+            const data = getStorageData();
+            data.achievements = achievements;
+            saveStorageData(data);
+        }
+
+        // Render functions
+        function renderVideos() {
+            const progress = getCurrentProgress();
+            const videoList = document.getElementById('videoList');
+            videoList.innerHTML = '';
+
+            videos.forEach((video, index) => {
+                const isCompleted = progress.completed[index];
+                const timestamp = progress.timestamps[index];
+
+                const card = document.createElement('div');
+                card.className = `video-card ${isCompleted ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="video-header">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" 
+                                   ${isCompleted ? 'checked' : ''} 
+                                   onchange="toggleVideo(${index})"
+                                   id="video-${index}">
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">Part ${video.part} - ${video.title}</div>
+                            <div class="video-duration">Duration: ${video.duration}</div>
+                        </div>
+                        <div class="part-badge">Part ${video.part}</div>
+                    </div>
+                    ${!isCompleted ? `
+                    <div class="timestamp-section">
+                        <span class="timestamp-label">Paused At:</span>
+                        <input type="text" 
+                               class="timestamp-input" 
+                               placeholder="00:00" 
+                               value="${timestamp}"
+                               onchange="saveTimestamp(${index}, this.value)">
+                    </div>
+                    ` : ''}
+                `;
+                videoList.appendChild(card);
+            });
+        }
+
+        function renderAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            const savedAchievements = getAchievementProgress();
+            achievementsList.innerHTML = '';
+
+            for (const [category, achievements] of Object.entries(achievementsData)) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'achievement-category';
+                
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categoryDiv.appendChild(categoryTitle);
+
+                const grid = document.createElement('div');
+                grid.className = 'achievements-grid';
+
+                achievements.forEach((achievement, index) => {
+                    const achievementKey = `${category}-${index}`;
+                    const isCompleted = savedAchievements[achievementKey] || false;
+
+                    const card = document.createElement('div');
+                    card.className = `achievement-card ${isCompleted ? 'completed' : ''}`;
+                    card.innerHTML = `
+                        <div class="achievement-checkbox">
+                            <input type="checkbox" 
+                                   ${isCompleted ? 'checked' : ''}
+                                   onchange="toggleAchievement('${achievementKey}')">
+                        </div>
+                        <div class="achievement-details">
+                            <div class="achievement-header">
+                                <span class="trophy-badge ${achievement.grade}">${achievement.grade}</span>
+                                <span class="achievement-name">${achievement.name}</span>
+                            </div>
+                            <div class="achievement-description">${achievement.description}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                categoryDiv.appendChild(grid);
+                achievementsList.appendChild(categoryDiv);
+            }
+        }
+
+        // Toggle functions
+        function toggleVideo(index) {
+            const data = getStorageData();
+            if (!data[currentPlaythrough]) {
+                data[currentPlaythrough] = {
+                    completed: Array(videos.length).fill(false),
+                    timestamps: Array(videos.length).fill('')
+                };
+            }
+            
+            data[currentPlaythrough].completed[index] = !data[currentPlaythrough].completed[index];
+            
+            // Clear timestamp when marking as completed
+            if (data[currentPlaythrough].completed[index]) {
+                data[currentPlaythrough].timestamps[index] = '';
+            }
+            
+            saveStorageData(data);
+            renderVideos();
+            updateStats();
+        }
+
+        function saveTimestamp(index, value) {
+            const data = getStorageData();
+            if (!data[currentPlaythrough]) {
+                data[currentPlaythrough] = {
+                    completed: Array(videos.length).fill(false),
+                    timestamps: Array(videos.length).fill('')
+                };
+            }
+            
+            data[currentPlaythrough].timestamps[index] = value;
+            saveStorageData(data);
+        }
+
+        function toggleAchievement(key) {
+            const achievements = getAchievementProgress();
+            achievements[key] = !achievements[key];
+            saveAchievementProgress(achievements);
+            renderAchievements();
+            updateStats();
+        }
+
+        // Stats calculation
+        function updateStats() {
+            const progress = getCurrentProgress();
+            const completedCount = progress.completed.filter(Boolean).length;
+            const totalVideos = videos.length;
+            const completionPercent = Math.round((completedCount / totalVideos) * 100);
+
+            // Calculate time watched
+            let totalSeconds = 0;
+            let watchedSeconds = 0;
+            
+            videos.forEach((video, index) => {
+                const [minutes, seconds] = video.duration.split(':').map(Number);
+                const videoSeconds = minutes * 60 + seconds;
+                totalSeconds += videoSeconds;
+                
+                if (progress.completed[index]) {
+                    watchedSeconds += videoSeconds;
+                }
+            });
+
+            const timeProgress = Math.round((watchedSeconds / totalSeconds) * 100);
+
+            // Format time watched
+            const hours = Math.floor(watchedSeconds / 3600);
+            const minutes = Math.floor((watchedSeconds % 3600) / 60);
+            const seconds = watchedSeconds % 60;
+            const timeWatchedStr = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // Update DOM
+            document.getElementById('completionPercent').textContent = `${completionPercent}%`;
+            document.getElementById('videosWatched').textContent = `${completedCount}/${totalVideos}`;
+            document.getElementById('timeWatched').textContent = timeWatchedStr;
+            document.getElementById('timeProgress').textContent = `${timeProgress}%`;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Export/Reset functions
+        function exportProgress() {
+            const data = getStorageData();
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `dark-souls-progress-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetCurrentPlaythrough() {
+            if (confirm(`Are you sure you want to reset all progress for the current playthrough? This cannot be undone.`)) {
+                const data = getStorageData();
+                data[currentPlaythrough] = {
+                    completed: Array(videos.length).fill(false),
+                    timestamps: Array(videos.length).fill('')
+                };
+                saveStorageData(data);
+                renderVideos();
+                updateStats();
+            }
+        }
+
+        function resetAllProgress() {
+            if (confirm('Are you sure you want to reset ALL progress for ALL playthroughs AND achievements? This cannot be undone.')) {
+                if (confirm('This will delete everything. Are you absolutely sure?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    loadProgress();
+                    renderVideos();
+                    renderAchievements();
+                    updateStats();
+                }
+            }
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
