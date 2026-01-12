@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Elden Ring - Walkthrough Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Iframe compatibility fixes */
+        html, body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: auto;
+            min-height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141c;
+            --bg-tertiary: #1c1c28;
+            --accent-fire: #d94a2b;
+            --accent-ice: #4a9dd9;
+            --accent-gold: #d4af37;
+            --text-primary: #e8e8f0;
+            --text-secondary: #a8a8b8;
+            --border: #2a2a38;
+            --completed: #2d7a4a;
+            --shadow: rgba(217, 74, 43, 0.3);
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #14141c 50%, #1c1c28 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Cormorant Garamond', serif;
+            min-height: 100vh;
+            width: 100%;
+            padding: 1rem;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 2rem;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(217, 74, 43, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(74, 157, 217, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 4rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(217, 74, 43, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-fire), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px var(--shadow);
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .youtube-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .youtube-link:hover {
+            background: linear-gradient(135deg, #ff3333, #ff0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .youtube-link svg {
+            transition: transform 0.3s ease;
+        }
+
+        .youtube-link:hover svg {
+            transform: scale(1.1);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            font-family: 'Cinzel', serif;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-fire);
+            transition: width 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-fire);
+        }
+
+        .tab-btn.active::after {
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-fire), transparent);
+        }
+
+        .quest-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .quest-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quest-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-fire);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .quest-item:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-fire);
+            box-shadow: 0 5px 20px var(--shadow);
+            transform: translateX(5px);
+        }
+
+        .quest-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .quest-item.completed {
+            background: linear-gradient(135deg, rgba(45, 122, 74, 0.15) 0%, var(--bg-secondary) 100%);
+            border-color: var(--completed);
+        }
+
+        .quest-item.completed::before {
+            background: var(--completed);
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .quest-item.completed .checkbox {
+            background: var(--completed);
+            border-color: var(--completed);
+        }
+
+        .checkbox::after {
+            content: '✓';
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .quest-item.completed .checkbox::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .quest-info {
+            flex: 1;
+        }
+
+        .quest-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+            color: var(--text-primary);
+        }
+
+        .quest-details {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .timestamp-display {
+            font-size: 0.85rem;
+            color: var(--accent-ice);
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        .timestamp-input {
+            transition: all 0.3s ease;
+        }
+
+        .timestamp-input:focus {
+            outline: none;
+            border-color: var(--accent-ice) !important;
+            box-shadow: 0 0 10px rgba(74, 157, 217, 0.3);
+        }
+
+        .timestamp-input:hover {
+            border-color: var(--accent-ice) !important;
+        }
+
+        .quest-level {
+            font-family: 'Cinzel', serif;
+            padding: 0.3rem 0.8rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            flex-shrink: 0;
+        }
+
+        .dlc-badge {
+            font-family: 'Cinzel', serif;
+            padding: 0.3rem 0.8rem;
+            background: linear-gradient(135deg, var(--accent-ice), var(--accent-fire));
+            border: 1px solid var(--accent-fire);
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+            box-shadow: 0 2px 10px rgba(217, 74, 43, 0.4);
+        }
+
+        .achievement-badge {
+            font-family: 'Cinzel', serif;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+
+        .achievement-badge.bronze {
+            background: linear-gradient(135deg, #cd7f32, #8b5a2b);
+            border: 1px solid #cd7f32;
+            color: var(--text-primary);
+        }
+
+        .achievement-badge.silver {
+            background: linear-gradient(135deg, #c0c0c0, #808080);
+            border: 1px solid #c0c0c0;
+            color: var(--bg-primary);
+        }
+
+        .achievement-badge.gold {
+            background: linear-gradient(135deg, #ffd700, #daa520);
+            border: 1px solid #ffd700;
+            color: var(--bg-primary);
+        }
+
+        .achievement-badge.platinum {
+            background: linear-gradient(135deg, #e5e4e2, #a8a8a8);
+            border: 1px solid #e5e4e2;
+            color: var(--bg-primary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-fire), var(--accent-gold));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px var(--shadow);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .playthrough-selector {
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
+
+        .playthrough-selector select {
+            transition: all 0.3s ease;
+        }
+
+        .playthrough-selector select:hover {
+            border-color: var(--accent-fire);
+            box-shadow: 0 0 10px var(--shadow);
+        }
+
+        .playthrough-selector select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .btn {
+            font-family: 'Cinzel', serif;
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-fire);
+            border-color: var(--accent-fire);
+            box-shadow: 0 5px 20px var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            font-family: 'Cormorant Garamond', serif;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent-fire);
+            border-color: var(--accent-fire);
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                padding: 0.8rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="headerTitle">ELDEN RING</h1>
+            <div class="subtitle" id="headerSubtitle">Following FightinCowboy's 100% Guide</div>
+            <a href="https://youtube.com/playlist?list=PL7RtZMiaOk8gdRf130w4gFYyhstL-5VRh&si=2NgT807DxjBkNMY0" target="_blank" class="youtube-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                Watch on YouTube
+            </a>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Completion</div>
+                <div class="stat-value" id="mainProgress">0%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Videos Watched</div>
+                <div class="stat-value" id="sideProgress">0/50</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Time Watched</div>
+                <div class="stat-value" id="huntProgress">0h 0m</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Time Progress</div>
+                <div class="stat-value" id="totalProgress">0%</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="playthrough-selector">
+                <label for="playthrough-select" style="font-family: 'Cinzel', serif; color: var(--accent-gold); margin-right: 1rem; letter-spacing: 1px;">Playthrough:</label>
+                <select id="playthrough-select" onchange="switchPlaythrough()" style="font-family: 'Cinzel', serif; padding: 0.5rem 1rem; background: var(--bg-secondary); border: 2px solid var(--border); color: var(--text-primary); border-radius: 6px; cursor: pointer; font-size: 1rem;">
+                    <option value="1">First Playthrough</option>
+                    <option value="2">New Game+ 1</option>
+                    <option value="3">New Game+ 2</option>
+                    <option value="4">New Game+ 3</option>
+                    <option value="5">New Game+ 4</option>
+                </select>
+            </div>
+            <button class="btn" onclick="resetProgress()">Reset Current</button>
+            <button class="btn" onclick="resetAllProgress()">Reset All</button>
+            <button class="btn" onclick="exportProgress()">Export Progress</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('walkthrough')">Walkthrough</button>
+            <button class="tab-btn" onclick="switchTab('achievements')">Achievements</button>
+        </div>
+
+        <div id="walkthrough" class="tab-content active">
+            <div class="section">
+                <div class="section-title">Krystal109's 100% Walkthrough</div>
+                <div class="quest-list" id="walkthrough-list"></div>
+            </div>
+        </div>
+
+        <div id="achievements" class="tab-content">
+            <div class="achievement-stats" style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-around; gap: 2rem; flex-wrap: wrap;">
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 2rem;" id="achievement-progress">0/69</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">UNLOCKED</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'Cinzel', serif; color: var(--accent-gold); font-size: 2rem;" id="achievement-percent">0%</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">COMPLETION</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Story</div>
+                <div class="quest-list" id="story-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Combat</div>
+                <div class="quest-list" id="combat-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Progression</div>
+                <div class="quest-list" id="progression-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Collectibles & Exploration</div>
+                <div class="quest-list" id="collectibles-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Difficulty</div>
+                <div class="quest-list" id="difficulty-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Echoes of the Fallen DLC</div>
+                <div class="quest-list" id="dlc-echoes-achievements"></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">The Rising Tide DLC</div>
+                <div class="quest-list" id="dlc-rising-achievements"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // GAME DATA - Elden Ring Walkthrough by FightinCowboy
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const gameData = {
+            walkthrough: [
+                { part: 1, name: "Getting Started in the Lands Between", duration: "27:02" },
+                { part: 2, name: "Limgrave Starting Loop", duration: "37:27" },
+                { part: 3, name: "Liurnia & Caelid Loop", duration: "38:40" },
+                { part: 4, name: "Round Table & Combat Specifics", duration: "33:25" },
+                { part: 5, name: "Murkwater, Agheel, & Limgrave Mines", duration: "42:31" },
+                { part: 6, name: "Margit, the Fell Omen", duration: "28:35" },
+                { part: 7, name: "Limgrave Field Bosses", duration: "35:38" },
+                { part: 8, name: "Weeping Peninsula", duration: "32:50" },
+                { part: 9, name: "Finishing the Peninsula", duration: "35:05" },
+                { part: 10, name: "Castle Morne", duration: "32:48" },
+                { part: 11, name: "Stormveil Castle", duration: "39:20" },
+                { part: 12, name: "Godrick the Grafted", duration: "38:36" },
+                { part: 13, name: "Fringefolk Hero's Grave & Finishing Limgrave", duration: "47:33" },
+                { part: 14, name: "Southeast Liurnia & Cliffbottom Catacombs", duration: "39:06" },
+                { part: 15, name: "South Liurnia and the Rose Church", duration: "35:22" },
+                { part: 16, name: "Village of the Albinaurics", duration: "39:34" },
+                { part: 17, name: "West Liurnia", duration: "34:03" },
+                { part: 18, name: "Glintstone Dragon & Crystal Tunnels", duration: "42:33" },
+                { part: 19, name: "Academy of Raya Lucaria", duration: "31:02" },
+                { part: 20, name: "God-Slaying Armament (Patched, Read Pinned Comment)", duration: "44:26" },
+                { part: 21, name: "Red Wolf of Radagon", duration: "58:06" },
+                { part: 22, name: "Rennala & Magma Wyrm Makar", duration: "36:07" },
+                { part: 23, name: "Royal Knight Loretta", duration: "32:09" },
+                { part: 24, name: "Eastern Liurnia & Black Knife Catacombs", duration: "34:24" },
+                { part: 25, name: "Jarburg (Read Pinned Comment) & Carian Studyhall", duration: "33:18" },
+                { part: 26, name: "Dragonkin Soldier of Nokstella", duration: "36:43" },
+                { part: 27, name: "Ancestor Spirit", duration: "32:23" },
+                { part: 28, name: "Caelid", duration: "35:35" },
+                { part: 29, name: "Swamp of Aeonia", duration: "34:35" },
+                { part: 30, name: "Selia Town of Sorcery", duration: "31:09" },
+                { part: 31, name: "Caelid Field Bosses", duration: "34:07" },
+                { part: 32, name: "Castle Redmane", duration: "28:18" },
+                { part: 33, name: "Starscourge Radahn", duration: "39:10" },
+                { part: 34, name: "Nokron & Night's Sacred Ground", duration: "32:35" },
+                { part: 35, name: "Ancestral Woods & Cursemark of Death", duration: "36:42" },
+                { part: 36, name: "Siofra Aquaduct", duration: "27:04" },
+                { part: 37, name: "Nokstella", duration: "30:44" },
+                { part: 38, name: "Lake of Rot", duration: "26:03" },
+                { part: 39, name: "Astel, Naturalborn of the Void", duration: "31:59" },
+                { part: 40, name: "Deeproot Depths", duration: "39:52" },
+                { part: 41, name: "Lichdragon Fortissax & Altus Maps", duration: "35:31" },
+                { part: 42, name: "Recusant Questlines", duration: "38:00" },
+                { part: 43, name: "Wyndham & Old Altus", duration: "31:09" },
+                { part: 44, name: "Shaded Castle", duration: "35:54" },
+                { part: 45, name: "Sellen's Questline", duration: "27:41" },
+                { part: 46, name: "Mount Gelmir", duration: "36:29" },
+                { part: 47, name: "Volcano Manor", duration: "36:29" },
+                { part: 48, name: "Altus Plateau", duration: "37:20" },
+                { part: 49, name: "Dominula & Altus Tunnel", duration: "34:32" },
+                { part: 50, name: "Lansseax and Sainted Hero's Grave", duration: "28:34" },
+                { part: 51, name: "Capital Outskirts", duration: "34:43" },
+                { part: 52, name: "Auriza Hero's Grave & Side Tomb", duration: "38:55" },
+                { part: 53, name: "Upper Caelid", duration: "38:10" },
+                { part: 54, name: "Divine Tower of Caelid & War-Dead Catacombs", duration: "28:58" },
+                { part: 55, name: "Moonlight Altar", duration: "36:43" },
+                { part: 56, name: "Leyndell, the Royal Capital", duration: "28:14" },
+                { part: 57, name: "Lower Leyndell", duration: "35:21" },
+                { part: 58, name: "Morgott, the Omen King", duration: "33:59" },
+                { part: 59, name: "Subterranean Shunning-Grounds", duration: "32:15" },
+                { part: 60, name: "Mohg, the Omen", duration: "31:58" },
+                { part: 61, name: "Frenzy Flame & Forbidden Lands", duration: "31:44" },
+                { part: 62, name: "Giants' Mountaintop Catacombs", duration: "39:21" },
+                { part: 63, name: "Rykard, Lord of Blasphemy", duration: "35:07" },
+                { part: 64, name: "Freezing Lake & Guardians Garrison", duration: "33:17" },
+                { part: 65, name: "Castle Sol & Mountaintop Field Bosses", duration: "39:16" },
+                { part: 66, name: "Fire Giant & Giant Conqueror's Tomb", duration: "34:15" },
+                { part: 67, name: "Hidden Path to the Haligtree", duration: "28:25" },
+                { part: 68, name: "Consecrated Snowfield Catacombs", duration: "37:46" },
+                { part: 69, name: "Snowfield Nightriders & Deathbird", duration: "29:08" },
+                { part: 70, name: "Yelough Anix & Ordina", duration: "33:58" },
+                { part: 71, name: "Mohgwyn Palace", duration: "32:58" },
+                { part: 72, name: "Crumbling Farum Azula", duration: "32:27" },
+                { part: 73, name: "Godskin Duo", duration: "29:59" },
+                { part: 74, name: "Dragon Temple & Alexander", duration: "40:34" },
+                { part: 75, name: "Dragonlord Placidusax", duration: "32:21" },
+                { part: 76, name: "Haligtree Canopy", duration: "33:40" },
+                { part: 77, name: "Prayer Room", duration: "28:55" },
+                { part: 78, name: "Elphael Inner Wall", duration: "43:41" },
+                { part: 79, name: "Malenia & Maliketh", duration: "30:58" },
+                { part: 80, name: "Ashen Capital & Hoarah Loux", duration: "30:28" },
+                { part: 81, name: "Elden Beast & Endings", duration: "35:24" }
+            ]
+        };
+        // Detect if running inside Game Library or standalone
+        const isInGameLibrary = window.parent && window.parent !== window;
+        let gameId = null;
+        let trackerProgress = {};
+        let gameImageUrl = null;
+        
+        // First, try to read from URL hash (works for external trackers loaded via iframe.src)
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            const params = new URLSearchParams(hash);
+            const hashGameId = params.get('gameId');
+            const progressParam = params.get('progress');
+            const imageParam = params.get('image');
+            
+            if (hashGameId) {
+                gameId = hashGameId;
+                console.log('📍 Game ID from URL hash:', gameId);
+            }
+            
+            if (imageParam) {
+                gameImageUrl = decodeURIComponent(imageParam);
+                console.log('🖼️ Game image URL:', gameImageUrl);
+            }
+            
+            if (progressParam) {
+                try {
+                    trackerProgress = JSON.parse(decodeURIComponent(progressParam));
+                    console.log('📦 Progress from URL hash:', trackerProgress);
+                } catch (e) {
+                    console.warn('⚠️ Failed to parse progress from URL hash:', e);
+                }
+            }
+        }
+        
+        // Fallback: check for injected window properties (for inline trackers)
+        if (!gameId && isInGameLibrary) {
+            gameId = window.gameLibraryGameId || null;
+            trackerProgress = window.trackerProgress || {};
+            gameImageUrl = window.gameImageUrl || null;
+            console.log('🎮 Using injected Game Library data');
+        }
+        
+        console.log('🎮 Running in ' + (isInGameLibrary ? 'Game Library' : 'Standalone') + ' mode');
+        console.log('📊 Game ID:', gameId);
+        console.log('📊 Loaded progress:', trackerProgress);
+        
+        // Load progress from Game Library or use default
+        let currentPlaythrough = 1;
+        let progress = {
+            playthroughs: {
+                1: []
+            },
+            achievements: [],
+            timestamps: {}
+        };
+        
+        // Load from Game Library if available
+        // The trackerProgress object contains the data directly (not nested under ff16_complete_data)
+        if (trackerProgress && (trackerProgress.currentPlaythrough || trackerProgress.playthroughs)) {
+            console.log('📥 Loading progress from Game Library:', trackerProgress);
+            
+            currentPlaythrough = trackerProgress.currentPlaythrough || 1;
+            progress = {
+                playthroughs: trackerProgress.playthroughs || { 1: [] },
+                achievements: trackerProgress.achievements || [],
+                timestamps: trackerProgress.timestamps || {}
+            };
+            
+            console.log('✅ Progress loaded successfully');
+            console.log('   - Current playthrough:', currentPlaythrough);
+            console.log('   - Videos completed:', progress.playthroughs[currentPlaythrough]?.length || 0);
+            console.log('   - Achievements:', progress.achievements.length);
+        } else {
+            console.log('ℹ️ No saved progress (new tracker)');
+        }
+
+        // Ensure current playthrough exists in progress
+        if (!progress.playthroughs[currentPlaythrough]) {
+            progress.playthroughs[currentPlaythrough] = [];
+        }
+        
+        // Ensure achievements array exists
+        if (!progress.achievements) {
+            progress.achievements = [];
+        }
+        
+        // Ensure timestamps object exists
+        if (!progress.timestamps) {
+            progress.timestamps = {};
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // CALCULATE TIME WATCHED
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function calculateTimeWatched(playthrough = null) {
+            // If playthrough is specified, calculate for that playthrough only
+            // If null, calculate for current playthrough
+            const targetPlaythrough = playthrough || currentPlaythrough;
+            const currentProgress = progress.playthroughs[targetPlaythrough] || [];
+            let completedMinutes = 0;
+            
+            gameData.walkthrough.forEach((video, index) => {
+                if (currentProgress.includes(index)) {
+                    // Parse duration - handle both HH:MM:SS and MM:SS formats
+                    const parts = video.duration.split(':').map(Number);
+                    let videoMinutes = 0;
+                    
+                    if (parts.length === 3) {
+                        // HH:MM:SS format
+                        videoMinutes = (parts[0] * 60) + parts[1] + (parts[2] / 60);
+                    } else if (parts.length === 2) {
+                        // MM:SS format
+                        videoMinutes = parts[0] + (parts[1] / 60);
+                    }
+                    
+                    completedMinutes += videoMinutes;
+                }
+            });
+            
+            const hours = Math.floor(completedMinutes / 60);
+            const minutes = Math.floor(completedMinutes % 60);
+            
+            return { hours, minutes, totalMinutes: completedMinutes };
+        }
+        
+        function calculateTotalTimeAllPlaythroughs() {
+            // Calculate cumulative time across all playthroughs
+            let totalMinutes = 0;
+            
+            // Iterate through all playthroughs (1-10)
+            for (let pt = 1; pt <= 10; pt++) {
+                if (progress.playthroughs[pt]) {
+                    gameData.walkthrough.forEach((video, index) => {
+                        if (progress.playthroughs[pt].includes(index)) {
+                            const parts = video.duration.split(':').map(Number);
+                            let videoMinutes = 0;
+                            
+                            if (parts.length === 3) {
+                                videoMinutes = (parts[0] * 60) + parts[1] + (parts[2] / 60);
+                            } else if (parts.length === 2) {
+                                videoMinutes = parts[0] + (parts[1] / 60);
+                            }
+                            
+                            totalMinutes += videoMinutes;
+                        }
+                    });
+                }
+            }
+            
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = Math.floor(totalMinutes % 60);
+            
+            return { hours, minutes, totalMinutes };
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // SAVE PROGRESS TO GAME LIBRARY
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function saveProgressToGameLibrary() {
+            const progressData = {
+                currentPlaythrough: currentPlaythrough,
+                playthroughs: progress.playthroughs,
+                achievements: progress.achievements,
+                timestamps: progress.timestamps,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Calculate stats for display
+            const currentProgress = progress.playthroughs[currentPlaythrough] || [];
+            const totalVideos = gameData.walkthrough.length;
+            const completionPercent = Math.round((currentProgress.length / totalVideos) * 100);
+            
+            // Calculate current playthrough time (for console log)
+            const currentTimeData = calculateTimeWatched();
+            
+            // Calculate TOTAL time across all playthroughs (for Game Library card)
+            const totalTimeData = calculateTotalTimeAllPlaythroughs();
+            
+            // Send to Game Library
+            if (isInGameLibrary && gameId) {
+                window.parent.postMessage({
+                    type: 'TRACKER_PROGRESS_UPDATE',
+                    gameId: gameId,
+                    checkboxId: 'elden_ring_complete_data',
+                    checked: true,
+                    allProgress: progressData
+                }, '*');
+                
+                // Also send overall game stats with TOTAL cumulative hours
+                window.parent.postMessage({
+                    type: 'TRACKER_SYNC',
+                    gameId: gameId,
+                    hours: totalTimeData.hours + (totalTimeData.minutes >= 30 ? 1 : 0), // Total time across all playthroughs
+                    progress: completionPercent
+                }, '*');
+                
+                console.log('✅ Synced to Game Library:', {
+                    playthrough: currentPlaythrough,
+                    completion: completionPercent + '%',
+                    videos: currentProgress.length + '/' + totalVideos,
+                    achievements: progress.achievements.length,
+                    currentPlaythroughTime: currentTimeData.hours + 'H ' + currentTimeData.minutes + 'M',
+                    totalTimeAllPlaythroughs: totalTimeData.hours + 'H ' + totalTimeData.minutes + 'M'
+                });
+                
+                showSyncNotification();
+            }
+        }
+        
+        function showSyncNotification() {
+            // Check if notification already exists
+            if (document.querySelector('.sync-notification')) return;
+            
+            const notification = document.createElement('div');
+            notification.className = 'sync-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.75rem;
+                box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+                z-index: 99999;
+                font-weight: 600;
+                font-family: system-ui, -apple-system, sans-serif;
+                animation: slideInRight 0.3s ease;
+            `;
+            notification.innerHTML = '✓ Synced to Game Library!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2500);
+        }
+        
+        // Add notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function initializeTracker() {
+            document.getElementById('playthrough-select').value = currentPlaythrough;
+            renderWalkthrough();
+            renderAchievements();
+            updateProgress();
+        }
+
+        function renderAchievements() {
+            renderAchievementCategory('story-achievements', gameData.achievements.story);
+            renderAchievementCategory('combat-achievements', gameData.achievements.combat);
+            renderAchievementCategory('progression-achievements', gameData.achievements.progression);
+            renderAchievementCategory('collectibles-achievements', gameData.achievements.collectibles);
+            renderAchievementCategory('difficulty-achievements', gameData.achievements.difficulty);
+            renderAchievementCategory('dlc-echoes-achievements', gameData.achievements.dlc_echoes);
+            renderAchievementCategory('dlc-rising-achievements', gameData.achievements.dlc_rising_tide);
+            updateAchievementProgress();
+        }
+
+        function renderAchievementCategory(containerId, achievements) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            achievements.forEach((achievement, index) => {
+                const achievementId = `${containerId}-${index}`;
+                const isUnlocked = progress.achievements.includes(achievementId);
+                const achievementItem = document.createElement('div');
+                achievementItem.className = `quest-item ${isUnlocked ? 'completed' : ''}`;
+                achievementItem.onclick = () => toggleAchievement(achievementId);
+                
+                const dlcBadge = achievement.dlc ? `<span class="dlc-badge">${achievement.dlc}</span>` : '';
+                
+                achievementItem.innerHTML = `
+                    <div class="checkbox"></div>
+                    <div class="quest-info">
+                        <div class="quest-name">${achievement.name}</div>
+                        <div class="quest-details">${achievement.description}</div>
+                    </div>
+                    <span class="achievement-badge ${achievement.grade}">${achievement.grade}</span>
+                    ${dlcBadge}
+                `;
+                
+                container.appendChild(achievementItem);
+            });
+        }
+
+        function toggleAchievement(achievementId) {
+            const idx = progress.achievements.indexOf(achievementId);
+            if (idx > -1) {
+                progress.achievements.splice(idx, 1);
+            } else {
+                progress.achievements.push(achievementId);
+            }
+            
+            saveProgressToGameLibrary();
+            renderAchievements();
+        }
+
+        function updateAchievementProgress() {
+            const totalAchievements = 69; // 50 base + 6 Echoes + 13 Rising Tide
+            const unlockedCount = progress.achievements.length;
+            const percent = Math.round((unlockedCount / totalAchievements) * 100);
+            
+            document.getElementById('achievement-progress').textContent = `${unlockedCount}/${totalAchievements}`;
+            document.getElementById('achievement-percent').textContent = `${percent}%`;
+        }
+
+        function renderWalkthrough() {
+            const container = document.getElementById('walkthrough-list');
+            container.innerHTML = '';
+            
+            const currentProgress = progress.playthroughs[currentPlaythrough] || [];
+            
+            gameData.walkthrough.forEach((video, index) => {
+                const isCompleted = currentProgress.includes(index);
+                const videoItem = document.createElement('div');
+                videoItem.className = `quest-item ${isCompleted ? 'completed' : ''}`;
+                
+                const dlcBadge = video.dlc ? '<span class="dlc-badge">DLC</span>' : '';
+                const timestampKey = `${currentPlaythrough}-${index}`;
+                const savedTimestamp = progress.timestamps[timestampKey] || '';
+                
+                // Create timestamp display
+                const timestampDisplay = savedTimestamp 
+                    ? `<div class="timestamp-display">Paused at: ${savedTimestamp}</div>`
+                    : '';
+                
+                videoItem.innerHTML = `
+                    <div class="checkbox" onclick="toggleVideo(${index}); event.stopPropagation();"></div>
+                    <div class="quest-info" style="flex: 1;">
+                        <div class="quest-name">Part ${video.part} - ${video.name}</div>
+                        <div class="quest-details">Duration: ${video.duration}</div>
+                        ${timestampDisplay}
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;">
+                        <input 
+                            type="text" 
+                            class="timestamp-input" 
+                            placeholder="00:00" 
+                            value="${savedTimestamp}"
+                            onclick="event.stopPropagation();"
+                            onchange="saveTimestamp(${index}, this.value)"
+                            maxlength="8"
+                            style="width: 70px; padding: 0.4rem; background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 4px; font-family: 'Cormorant Garamond', serif; text-align: center;"
+                        />
+                        <div class="quest-level">Part ${video.part}</div>
+                        ${dlcBadge}
+                    </div>
+                `;
+                
+                container.appendChild(videoItem);
+            });
+        }
+
+        function toggleVideo(index) {
+            if (!progress.playthroughs[currentPlaythrough]) {
+                progress.playthroughs[currentPlaythrough] = [];
+            }
+            
+            const idx = progress.playthroughs[currentPlaythrough].indexOf(index);
+            if (idx > -1) {
+                progress.playthroughs[currentPlaythrough].splice(idx, 1);
+            } else {
+                progress.playthroughs[currentPlaythrough].push(index);
+                // Clear timestamp when marking as complete
+                const timestampKey = `${currentPlaythrough}-${index}`;
+                delete progress.timestamps[timestampKey];
+            }
+            
+            saveProgressToGameLibrary();
+            initializeTracker();
+        }
+
+        function saveTimestamp(index, value) {
+            const timestampKey = `${currentPlaythrough}-${index}`;
+            
+            // Validate and format timestamp (HH:MM:SS or MM:SS)
+            const cleanValue = value.trim();
+            if (cleanValue === '') {
+                delete progress.timestamps[timestampKey];
+            } else {
+                progress.timestamps[timestampKey] = cleanValue;
+            }
+            
+            saveProgressToGameLibrary();
+            renderWalkthrough();
+        }
+
+        function switchPlaythrough() {
+            currentPlaythrough = parseInt(document.getElementById('playthrough-select').value);
+            
+            if (!progress.playthroughs[currentPlaythrough]) {
+                progress.playthroughs[currentPlaythrough] = [];
+            }
+            
+            saveProgressToGameLibrary();
+            initializeTracker();
+        }
+
+        function updateProgress() {
+            const currentProgress = progress.playthroughs[currentPlaythrough] || [];
+            const totalVideos = gameData.walkthrough.length;
+            const completedVideos = currentProgress.length;
+            const overallPercent = Math.round((completedVideos / totalVideos) * 100);
+            
+            // Calculate time-based progress using actual video durations
+            const timeData = calculateTimeWatched();
+            
+            // Calculate total time for all videos
+            let totalMinutes = 0;
+            gameData.walkthrough.forEach((video) => {
+                const parts = video.duration.split(':').map(Number);
+                let videoMinutes = 0;
+                
+                if (parts.length === 3) {
+                    videoMinutes = (parts[0] * 60) + parts[1] + (parts[2] / 60);
+                } else if (parts.length === 2) {
+                    videoMinutes = parts[0] + (parts[1] / 60);
+                }
+                
+                totalMinutes += videoMinutes;
+            });
+            
+            const timePercent = Math.round((timeData.totalMinutes / totalMinutes) * 100) || 0;
+            
+            document.getElementById('mainProgress').textContent = `${overallPercent}%`;
+            document.getElementById('sideProgress').textContent = `${completedVideos}/${totalVideos}`;
+            document.getElementById('huntProgress').textContent = `${timeData.hours}h ${timeData.minutes}m`;
+            document.getElementById('totalProgress').textContent = `${timePercent}%`;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function resetProgress() {
+            if (confirm(`Are you sure you want to reset ${getPlaythroughName(currentPlaythrough)}? This will also clear all timestamps for this playthrough.`)) {
+                progress.playthroughs[currentPlaythrough] = [];
+                
+                // Clear timestamps for this playthrough
+                Object.keys(progress.timestamps).forEach(key => {
+                    if (key.startsWith(`${currentPlaythrough}-`)) {
+                        delete progress.timestamps[key];
+                    }
+                });
+                
+                saveProgressToGameLibrary();
+                initializeTracker();
+            }
+        }
+
+        function resetAllProgress() {
+            if (confirm('Are you sure you want to reset ALL playthroughs, achievements, and timestamps? This cannot be undone.')) {
+                progress = {
+                    playthroughs: {
+                        1: []
+                    },
+                    achievements: [],
+                    timestamps: {}
+                };
+                currentPlaythrough = 1;
+                saveProgressToGameLibrary();
+                initializeTracker();
+            }
+        }
+
+        function getPlaythroughName(num) {
+            if (num === 1) return 'First Playthrough';
+            return `New Game+ ${num - 1}`;
+        }
+
+        function exportProgress() {
+            const dataStr = JSON.stringify(progress, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'ff16-progress.json';
+            link.click();
+        }
+
+        // Listen for manual sync requests from Game Library
+        window.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'REQUEST_PROGRESS_SYNC') {
+                console.log('📥 Received manual sync request from Game Library');
+                
+                // Trigger sync to library (this function handles everything)
+                saveProgressToGameLibrary();
+            }
+        });
+
+        // Apply header background image if available
+        function applyHeaderBackground() {
+            const header = document.querySelector('header');
+            const title = document.getElementById('headerTitle');
+            const subtitle = document.getElementById('headerSubtitle');
+            
+            if (gameImageUrl && header) {
+                // Apply background image
+                header.style.background = `
+                    linear-gradient(135deg, rgba(10, 10, 15, 0.7) 0%, rgba(20, 20, 28, 0.85) 100%),
+                    url('${gameImageUrl}') center/cover no-repeat
+                `;
+                header.style.backgroundBlendMode = 'overlay';
+                
+                // Hide title and subtitle when image is present
+                if (title) title.style.display = 'none';
+                if (subtitle) subtitle.style.display = 'none';
+                
+                console.log('🖼️ Applied header background image and hid text');
+            } else {
+                // No image - show title and subtitle
+                if (title) title.style.display = '';
+                if (subtitle) subtitle.style.display = '';
+                console.log('📝 No image URL - showing header text');
+            }
+        }
+
+        initializeTracker();
+        applyHeaderBackground();
+    </script>
+</body>
+</html>
