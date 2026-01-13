@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <title>Amazon Orders/Items Report Launcher (Final Fix)</title>
+  <style>
+    :root { --brand:#146eb4; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin:0; background:#fafafa; color:#1a1a1a; }
+    .wrap { max-width:980px; margin:0 auto; padding:28px; }
+    h1 { margin:0 0 6px; font-size:1.7rem; }
+    .card { background:#fff; border:1px solid #e6e6e6; border-radius:12px; padding:18px; margin:18px 0; }
+    .row { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+    label { display:flex; flex-direction:column; gap:6px; font-size:.92rem; color:#333; }
+    select, input[type=\"text\"] { padding:10px; border:1px solid #c8c8c8; border-radius:8px; background:#fff; }
+    .actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+    button { appearance:none; border:1px solid #c8c8c8; border-radius:8px; padding:10px 14px; background:#fff; cursor:pointer; font-size:1rem; }
+    button.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
+    button:hover { filter:brightness(0.98); }
+    a.btn { display:inline-block; text-decoration:none; }
+    a.btn.primary { background:var(--brand); color:#fff; border:1px solid var(--brand); border-radius:8px; padding:10px 14px; }
+    .muted { color:#666; font-size:.92rem; }
+    #status { font-size:.92rem; color:#555; margin-top:8px; white-space:pre-wrap; }
+  </style>
+</head>
+<body>
+  <div class=\"wrap\">
+    <h1>Amazon Orders/Items Report Launcher</h1>
+
+    <div class=\"card\">
+      <div class=\"row\">
+        <label>
+          Report type
+          <select id=\"reportType\">
+            <option value=\"items_report_1\" selected>Items report</option>
+            <option value=\"orders_report_1\">Orders report</option>
+          </select>
+        </label>
+        <label>
+          Date span
+          <select id=\"dateSpanSelection\">
+            <option value=\"MONTH_TO_DATE\" selected>Month to date</option>
+            <option value=\"LAST_MONTH\">Last month</option>
+            <option value=\"QUARTER_TO_DATE\">Quarter to date</option>
+            <option value=\"LAST_QUARTER\">Last quarter</option>
+            <option value=\"YEAR_TO_DATE\">Year to date</option>
+            <option value=\"LAST_YEAR\">Last year</option>
+          </select>
+        </label>
+        <label>
+          Keywords (optional)
+          <input type=\"text\" id=\"keywords\" placeholder=\"e.g., PO number, user, SKU\" />
+        </label>
+      </div>
+
+      <div class=\"actions\" style=\"margin-top:14px\">
+        <button id=\"openPopup\" class=\"primary\">Open Preview (popup)</button>
+        <button id=\"openTab\">Open in New Tab</button>
+        <a id=\"directLink\" class=\"btn\" href=\"#\">Open via direct link</a>
+        <label class=\"muted\" style=\"display:flex;align-items:center;gap:8px\">
+          <input type=\"checkbox\" id=\"autoOpen\"> Auto-open on page load
+        </label>
+      </div>
+      <div id=\"status\"></div>
+      <p class=\"muted\">If you’re not signed in, Amazon will prompt for sign-in and return to the filtered report.</p>
+    </div>
+
+    <div class=\"card\">
+      <h3 style=\"margin-top:0\">Bookmarklet</h3>
+      <p class=\"muted\">Drag this to your bookmarks bar. It reflects the current filter selections:</p>
+      <p><a id=\"bookmarklet\" class=\"btn\" href=\"javascript:(function(){location.href='https://www.amazon.ca/b2b/aba/reports';})();\">Go to filtered report — Bookmarklet (drag me)</a></p>
+    </div>
+
+    <div class=\"card\">
+      <h3 style=\"margin-top:0\">Troubleshooting</h3>
+      <ul class=\"muted\">
+        <li>If the popup is blocked, use <strong>Open in New Tab</strong> or <strong>Open via direct link</strong>.</li>
+        <li>Local pages can’t click inside amazon.ca (Same‑Origin Policy); they can only open/navigate.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script defer>
+    function $(id){ return document.getElementById(id); }
+    function log(msg){ const s = $('status'); if (s) s.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; }
+
+    function buildUrl(){
+      const base = 'https://www.amazon.ca/b2b/aba/reports';
+      const reportTypeEl = $('reportType');
+      const dateSpanEl = $('dateSpanSelection');
+      const keywordsEl = $('keywords');
+      if(!reportTypeEl || !dateSpanEl){ log('Missing filter controls in DOM.'); return base; }
+      const params = new URLSearchParams();
+      params.set('reportType', reportTypeEl.value || 'items_report_1');
+      params.set('dateSpanSelection', dateSpanEl.value || 'MONTH_TO_DATE');
+      params.set('ref', 'hpr_redirect_report');
+      const kw = (keywordsEl && keywordsEl.value ? keywordsEl.value.trim() : '');
+      if (kw) params.set('keywords', kw);
+      const url = `${base}?${params.toString()}`;
+      const direct = $('directLink'); const bm = $('bookmarklet');
+      if (direct) direct.href = url;
+      if (bm) bm.href = `javascript:(function(){location.href='${url.replace(/'/g, "\\'")}';})();`;
+      return url;
+    }
+
+    function openCentered(url, name, w, h){
+      const dualScreenLeft = (window.screenLeft !== undefined ? window.screenLeft : screen.left);
+      const dualScreenTop  = (window.screenTop  !== undefined ? window.screenTop  : screen.top);
+      const width  = (window.innerWidth  || document.documentElement.clientWidth  || screen.width);
+      const height = (window.innerHeight || document.documentElement.clientHeight || screen.height);
+      const left = (width - w) / 2 + dualScreenLeft;
+      const top  = (height - h) / 2 + dualScreenTop;
+      const features = `noopener,noreferrer,scrollbars=yes,resizable=yes,width=${w},height=${h},top=${top},left=${left}`;
+      return window.open(url, name, features);
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      // Initialize links
+      buildUrl();
+      // Update links as filters change
+      ['reportType','dateSpanSelection','keywords'].forEach(function(id){ const el = $(id); if (el) el.addEventListener('input', buildUrl); });
+
+      const openPopupBtn = $('openPopup'); const openTabBtn = $('openTab'); const autoOpenChk = $('autoOpen');
+
+      if (openPopupBtn) openPopupBtn.addEventListener('click', function(){
+        const url = buildUrl(); log('Attempting popup…');
+        const win = openCentered(url, 'AmazonFilteredReport', 1180, 780);
+        if (!win) { log('Popup blocked or window.open returned null. Use “Open in New Tab” or allow popups.'); }
+        else { try { win.focus(); log('Popup opened.'); } catch { log('Popup opened; focus not granted.'); } }
+      });
+
+      if (openTabBtn) openTabBtn.addEventListener('click', function(){
+        const url = buildUrl(); log('Opening in new tab…');
+        const w = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!w) log('New tab blocked. Use the direct link.');
+      });
+
+      if (autoOpenChk) {
+        autoOpenChk.checked = (localStorage.getItem('orders_auto_open') === '1');
+        autoOpenChk.addEventListener('change', function(){ localStorage.setItem('orders_auto_open', autoOpenChk.checked ? '1' : '0'); });
+        const url = buildUrl();
+        if (autoOpenChk.checked) { const win = openCentered(url, 'AmazonFilteredReport', 1180, 780); log(win ? 'Auto-opened popup.' : 'Auto-open blocked by browser.'); }
+        else { log('Ready. Choose filters and click a button.'); }
+      }
+    });
+  </script>
+</body>
+</html>
